@@ -23,4 +23,15 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+// Strip experimental.turbo added by next-intl (Next.js 16 uses top-level "turbopack" only)
+let config = withNextIntl(nextConfig);
+const exp = config.experimental as Record<string, unknown> | undefined;
+if (exp?.turbo !== undefined) {
+  const { turbo: _turbo, ...experimentalRest } = exp;
+  config = {
+    ...config,
+    experimental:
+      Object.keys(experimentalRest).length > 0 ? experimentalRest : undefined,
+  };
+}
+export default config;
